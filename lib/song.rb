@@ -2,7 +2,6 @@ class Song
   attr_accessor :name, :artist_name
   @@all = []
 
-
   def self.all
     @@all
   end
@@ -11,57 +10,60 @@ class Song
     self.class.all << self
   end
 
-def self.create
-  song = song.new
-  self.all << song
-  song
-end
-
-def self.create_by_name(title)
-  song = self.create
-  song.name = title
-  song
-
-end
-
-def self.find_by_name(title) #class finder
-    result = self.all.detect {|song| song.name == title}
-    result
+  def self.create
+    song = Song.new
+    song.save
+    song
   end
 
-  def self.find_or_create_by_name(title)
-    #either return a matching song instance with that name or create a new song with the name and return the song instance
-    result = self.find_by_name(title)
-    if result
-      result
-    else
-      self.create_by_name(title)
-    end
+  def self.new_by_name(song_name)
+    song = self.new
+    song.name = song_name
+    song
+  end
+
+  def self.create_by_name(song_name)
+    song = self.create
+    song.name = song_name
+    song
+  end
+
+  def self.find_by_name(song_name)
+    self.all.detect{|s| s.name == song_name}
+  end
+
+  def self.find_or_create_by_name(song_name)
+    self.find_by_name(song_name) || self.create_by_name(song_name)
   end
 
   def self.alphabetical
-    sorted = self.all.sort_by {|song| song.name}
-    sorted
+    self.all.sort_by{|s| s.name}
   end
 
   def self.new_from_filename(filename)
-    song_array = filename.split(" - ")
-    song_array[1] = song_array[1].chomp(".mp3")
+    parts = filename.split(" - ")
+    artist_name = parts[0]
+    song_name = parts[1].gsub(".mp3", "")
+
     song = self.new
-    song.name = song_array[1]
-    song.artist_name = song_array[0]
+    song.name = song_name
+    song.artist_name = artist_name
     song
   end
 
   def self.create_from_filename(filename)
-    result = self.new_from_filename(filename)
+    parts = filename.split(" - ")
+    artist_name = parts[0]
+    song_name = parts[1].gsub(".mp3", "")
+
     song = self.create
-    song.name = result.name
-    song.artist_name = result.artist_name
+    song.name = song_name
+    song.artist_name = artist_name
     song
   end
 
   def self.destroy_all
     self.all.clear
   end
+
 end
